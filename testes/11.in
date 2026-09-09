@@ -1,0 +1,5 @@
+7 conecta.bin 2
+2 idPoPs 10 velocidade 10
+1 unidadeMedida NULO
+2 velocidade 1 unidadeMedida "G"
+2 velocidade 100 unidadeMedida "M"
