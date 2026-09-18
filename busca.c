@@ -14,8 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Quantidade inicial de posições do vetor de RRNs encontrados. O vetor dobra
-   de tamanho sempre que enche, evitando percorrer o arquivo duas vezes. */
 #define CAP_INICIAL 16
 
 /* ------------------------------------------------------------------ */
@@ -136,6 +134,7 @@ void AtualizarCampo(Registro *reg, Criterio *c) {
    um contador porque a leitura é sequencial: o primeiro registro lido depois
    do cabeçalho é o RRN 0, o seguinte é o RRN 1, e assim por diante.
    O arquivo não é fechado aqui: quem abriu é quem fecha. */
+
 int *buscarRRNs(FILE *bin, Criterio *crit, int n, int *qtd) {
     *qtd = 0;
     if (bin == NULL) return NULL;

@@ -1,8 +1,8 @@
 /*
     csv.c
-    Implementação da carga inicial do arquivo de dados a partir do arquivo
-    conectaPoPs.csv. Cada linha do CSV vira um registro de tamanho fixo escrito
-    campo a campo no arquivo binário, na ordem em que aparece na entrada.
+    Implementação da carga inicial do arquivo de dados a partir do CSV. 
+    Cada linha do CSV vira um registro de tamanho fixo escrito campo a 
+    campo no arquivo binário, na ordem em que aparece na entrada.
 */
 
 #include "csv.h"
@@ -18,7 +18,6 @@
    eles, o último campo da linha carregaria o '\r' junto. */
 #define DELIM ",;\r\n"
 
-/* Tamanho máximo de uma linha lida do CSV. */
 #define TAM_LINHA 1024
 
 /* ------------------------------------------------------------------ */
@@ -30,6 +29,7 @@
    '0') e só é marcado como consistente no fechamento. Os contadores proxRRN e
    nroPares do cabeçalho são atualizados a cada registro inserido.
    Retorna 1 em caso de sucesso e 0 em caso de falha de abertura. */
+
 int criarTabela(const char *nomeCSV, const char *nomeBin) {
     /* O CSV é apenas lido, então basta abri-lo em modo texto para leitura. */
     FILE *csv = fopen(nomeCSV, "r");

@@ -1,8 +1,7 @@
 /* 
     registro.c
     Implementação da manipulação do registro de cabeçalho e dos registros de
-    dados. Toda a entrada/saída é feita campo a campo, conforme a restrição [6]
-    da especificação: nunca se escreve ou lê a struct inteira de uma só vez.
+    dados. Toda a entrada/saída é feita campo a campo.
 */
 
 #include "registro.h"

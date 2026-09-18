@@ -12,7 +12,6 @@
 
 #include "registro.h"
 
-/* Tamanhos máximos do nome do campo e do valor lidos da entrada. */
 #define TAM_NOME_CAMPO 32
 #define TAM_VALOR      64
 

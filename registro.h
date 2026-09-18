@@ -1,7 +1,7 @@
 /* 
     registro.h
     Definição das estruturas do registro de cabeçalho e dos registros de dados
-    do arquivo conectaPoPs, além das operações de leitura/escrita campo a campo.
+    do arquivo CSV, além das operações de leitura/escrita campo a campo.
 */
 
 #ifndef REGISTRO_H
@@ -9,20 +9,17 @@
 
 #include <stdio.h>
 
-/* Tamanhos fixos definidos na especificação do trabalho */
+
 #define TAM_CABECALHO 17 /* 1 + 4 + 4 + 4 + 4 bytes */
 #define TAM_REGISTRO  18 /* 1 + 4 + 4 + 4 + 4 + 1 bytes */
 
-/* Marcadores de status do arquivo de dados */
 #define STATUS_INCONSISTENTE '0'
 #define STATUS_CONSISTENTE   '1'
 
-/* Marcadores do campo de controle 'removido' */
 #define NAO_REMOVIDO '0'
 #define REMOVIDO     '1'
 
-/* Representação de valores nulos */
-#define LIXO      '$' /* preenchimento de campos string nulos / lixo */
+#define LIXO      '$' 
 #define INT_NULO  (-1)
 
 /* Registro de cabeçalho (17 bytes, nesta ordem) */
