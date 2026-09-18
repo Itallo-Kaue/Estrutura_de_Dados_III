@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void funcionalidade1();
-void funcionalidade2();
-void funcionalidade3();
-void funcionalidade4();
-void funcionalidade5();
-void funcionalidade6();
-void funcionalidade7();
+void Funcionalidade_1();
+void Funcionalidade_2();
+void Funcionalidade_3();
+void Funcionalidade_4();
+void Funcionalidade_5();
+void Funcionalidade_6();
+void Funcionalidade_7();
 
 #endif

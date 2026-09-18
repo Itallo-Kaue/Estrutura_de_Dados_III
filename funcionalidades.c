@@ -17,24 +17,21 @@
 
 #include "fornecidas.c"
 
-/* Tamanho máximo do nome de arquivo lido da entrada. */
 #define TAM_NOME_ARQUIVO 64
 
-/* Mensagem única de erro exigida pela especificação sempre que o arquivo de
-   entrada não puder ser processado. */
 #define MSG_FALHA "Falha no processamento do arquivo.\n"
 
-/* Mensagem impressa quando uma busca não devolve nenhum registro. */
 #define MSG_INEXISTENTE "Registro inexistente.\n"
 
-/* ------------------------------------------------------------------ */
-/* [1] Criação do arquivo de dados a partir do CSV                    */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    1º Funcionalidade: Criação                 
+   ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo CSV de origem e o nome do arquivo binário a ser
-   criado. Toda a carga é feita por criarTabela; aqui só resta imprimir o
-   resultado com a função fornecida. */
-void funcionalidade1() {
+   criado. Toda o trabalho é feito a partir da função criarTabela, imprimindo uma mensagem
+   de erro se não for possível criar a tabela. */
+
+   void Funcionalidade_1() {
     char nomeCSV[TAM_NOME_ARQUIVO];
     char nomeBin[TAM_NOME_ARQUIVO];
 
@@ -48,14 +45,15 @@ void funcionalidade1() {
     BinarioNaTela(nomeBin);
 }
 
-/* ------------------------------------------------------------------ */
-/* [2] Listagem de todos os registros                                 */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    2º Funcionalidade: Listagem                                
+   ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo de dados. Percorre o arquivo sequencialmente, do
    primeiro registro até o fim, e imprime os que não estão removidos. O
-   arquivo é aberto apenas para leitura, portanto o status não é alterado. */
-void funcionalidade2() {
+   arquivo é aberto apenas para leitura. */
+
+   void Funcionalidade_2() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
 
     if (scanf("%63s", nomeArquivo) != 1) return;
@@ -77,21 +75,22 @@ void funcionalidade2() {
         impressos += ImprimirRegistros(&reg);
     }
 
-    /* Um arquivo sem nenhum registro válido também precisa de saída. */
+    /* Se nenhum registro for encontrado, mostra a mensagem de inexistente. */
     if (impressos == 0) printf(MSG_INEXISTENTE);
 
     fclose(bin);
 }
 
-/* ------------------------------------------------------------------ */
-/* [3] Busca por critérios                                            */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    3º Funcionalidade: Busca                                           
+   ------------------------------------------------------------------ */
 
-/* Entrada: o nome do arquivo de dados e a quantidade n de buscas; em seguida,
-   para cada busca, a quantidade m de campos seguida dos m pares
-   "nomeCampo valor". Cada busca imprime os registros que satisfazem todos os
-   seus campos e é encerrada por uma linha em branco. */
-void funcionalidade3() {
+/* Entrada: o nome do arquivo de dados e a quantidade n de buscas. Logo após pegar
+   essas entradas, é lido, para cada busca, a quantidade m de campos seguida dos
+   m pares do "nomeCampo" e do "valor". Cada busca imprime os registros que satisfazem 
+   todos os seus campos e é encerrada por uma linha em branco. */
+
+void Funcionalidade_3() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
     int n;
 
@@ -133,15 +132,16 @@ void funcionalidade3() {
     fclose(bin);
 }
 
-/* ------------------------------------------------------------------ */
-/* [4] Busca por RRN                                                  */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    4º Funcionalidade: Busca                                                 
+   ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo de dados e o RRN do registro desejado.
-   Aqui não há varredura: o byte offset é calculado diretamente a partir do
-   RRN, que é a vantagem do registro de tamanho fixo. Um RRN fora do arquivo
-   ou um registro logicamente removido não são resposta válida. */
-void funcionalidade4() {
+   Sem varredura, o offset é calculado diretamente a partir do RRR,
+   devido ao registro ter tamanho fixo. Um RRN fora do arquivo
+   ou um registro logicamente removido não serão considerados. */
+
+void Funcionalidade_4() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
     int rrn;
 
@@ -167,17 +167,18 @@ void funcionalidade4() {
     fclose(bin);
 }
 
-/* ------------------------------------------------------------------ */
-/* [5] Remoção lógica                                                 */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    5º Funcionalidade: Remoção                                                
+   ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo de dados e a quantidade n de operações de
-   remoção; em seguida, para cada operação, a quantidade m de campos de busca
-   seguida dos m pares "nomeCampo valor".
+   remoção.Logo após pegar essas entradas, é lido, para cada busca, a 
+   quantidade m de campos seguida dos m pares do "nomeCampo" e do "valor".
    Todo registro que satisfizer todos os campos de uma operação é marcado como
    removido, tem seus campos de dados preenchidos com lixo e passa a ser o topo
    da pilha de registros removidos. */
-void funcionalidade5() {
+
+void Funcionalidade_5() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
     int n;
 
@@ -230,17 +231,17 @@ void funcionalidade5() {
     BinarioNaTela(nomeArquivo);
 }
 
-/* ------------------------------------------------------------------ */
-/* [6] Inserção de novos registros                                    */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    6º Funcionalidade: Inserção                                    
+   ------------------------------------------------------------------ */
 
-/* Entrada: o nome do arquivo de dados e a quantidade n de inserções; em
-   seguida, uma linha por registro com os quatro campos na ordem idPoPs,
-   idPoPsConectado, velocidade e unidadeMedida, usando NULO para os campos
-   nulos.
-   A inserção reaproveita o espaço dos registros removidos: só quando a pilha
+/* Entrada: o nome do arquivo de dados e a quantidade n de inserções. Logo em
+   seguida, é feito uma linha por registro com os quatro campos na seguinte ordem: 
+   idPoPs,idPoPsConectado, velocidade e unidadeMedida (usando NULO para os campos
+   nulos). A inserção reaproveita o espaço dos registros removidos: só quando a pilha
    está vazia é que o registro vai para o fim do arquivo, no proxRRN. */
-void funcionalidade6() {
+
+void Funcionalidade_6() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
     int n;
 
@@ -289,17 +290,16 @@ void funcionalidade6() {
     BinarioNaTela(nomeArquivo);
 }
 
-/* ------------------------------------------------------------------ */
-/* [7] Atualização de registros                                       */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    7º Funcionalidade: Atualização                                        
+   ------------------------------------------------------------------ */
 
-/* Entrada: o nome do arquivo de dados e a quantidade n de atualizações; em
-   seguida, para cada atualização, duas linhas no formato "quantidade seguida
-   de pares nomeCampo valor": a primeira com os campos de busca e a segunda
-   com os campos a serem alterados.
-   Como os registros têm tamanho fixo, a alteração é feita no próprio RRN, sem
-   remover e reinserir. */
-void funcionalidade7() {
+/* Entrada: o nome do arquivo de dados e a quantidade n de atualizações; Seguinte a isso,
+   para cada atualização, duas linhas no formato "nomeCampo" e "valor": a primeira com os 
+   campos de busca e a segunda com os campos a serem alterados. Como os registros têm 
+   tamanho fixo, a alteração é feita no próprio RRN, sem remover e reinserir. */
+
+void Funcionalidade_7() {
     char nomeArquivo[TAM_NOME_ARQUIVO];
     int n;
 
