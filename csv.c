@@ -16,13 +16,14 @@
    porque o arquivo de entrada aparece nas duas formas. O '\r' e o '\n' entram
    na lista porque a quebra de linha pode estar no padrão Windows (CRLF) e, sem
    eles, o último campo da linha carregaria o '\r' junto. */
+
 #define DELIM ",;\r\n"
 
 #define TAM_LINHA 1024
 
-/* ------------------------------------------------------------------ */
-/* Carga do arquivo de dados a partir do CSV                          */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    Carga do arquivo de dados a partir do CSV                          
+ '  ------------------------------------------------------------------ */
 
 /* Percorre o CSV de entrada linha a linha e grava um registro de dados para
    cada uma delas. O arquivo binário é criado com o cabeçalho inicial (status
@@ -31,11 +32,11 @@
    Retorna 1 em caso de sucesso e 0 em caso de falha de abertura. */
 
 int criarTabela(const char *nomeCSV, const char *nomeBin) {
-    /* O CSV é apenas lido, então basta abri-lo em modo texto para leitura. */
     FILE *csv = fopen(nomeCSV, "r");
     if (csv == NULL) return 0;
 
     /* Cria o arquivo de dados já com o cabeçalho inicial gravado. */
+
     Cabecalho cab;
     FILE *bin = criarArquivoBinario(nomeBin, &cab);
     if (bin == NULL) {
@@ -47,37 +48,43 @@ int criarTabela(const char *nomeCSV, const char *nomeBin) {
 
     /* A primeira linha do CSV é o cabeçalho com os nomes dos campos e não
        corresponde a nenhum registro, portanto é apenas descartada. */
+
     fgets(linha, sizeof(linha), csv);
 
     while (fgets(linha, sizeof(linha), csv) != NULL) {
         /* Quebra a linha nos quatro campos. A primeira chamada de strtok
            recebe a linha e as demais recebem NULL para continuar de onde a
            anterior parou. */
+
         char *pops = strtok(linha, DELIM);
         char *cone = strtok(NULL, DELIM);
         char *velo = strtok(NULL, DELIM);
         char *unid = strtok(NULL, DELIM);
 
         /* idPoPs e idPoPsConectado não podem ser nulos: uma linha sem esses
-           campos é ignorada (linha em branco no fim do arquivo, por exemplo). */
+           campos é ignorada. */
+
         if (pops == NULL || cone == NULL) continue;
 
         /* O registro nasce com os campos de controle padrão e os campos de
            dados nulos (-1 para inteiros e '$' para a unidade de medida). */
+
         Registro reg;
         inicializarRegistro(&reg);
 
         reg.idPoPs = atoi(pops);
         reg.idPoPsConectado = atoi(cone);
 
-        /* Campos opcionais: quando ausentes ou vazios no CSV, permanecem com
+        /* Quando forem ausentes ou vazios no CSV, permanecem com
            os valores nulos definidos em inicializarRegistro. */
+
         if (velo != NULL && velo[0] != '\0') reg.velocidade = atoi(velo);
         if (unid != NULL && unid[0] != '\0') reg.unidadeMedida = unid[0];
 
         /* Grava o registro no próximo RRN disponível e atualiza os contadores
            do cabeçalho. Nesta funcionalidade não há reaproveitamento de
            espaço, então os registros são sempre inseridos no fim do arquivo. */
+
         escreverRegistroPorRRN(bin, &reg, cab.proxRRN);
         cab.proxRRN++;
         cab.nroPares++;
@@ -87,6 +94,7 @@ int criarTabela(const char *nomeCSV, const char *nomeBin) {
 
     /* Regrava o cabeçalho com os contadores finais, marca o arquivo como
        consistente ('1') e o fecha. */
+       
     fecharArquivoBinario(bin, &cab);
 
     return 1;

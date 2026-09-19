@@ -7,8 +7,8 @@
 */
 
 #include "busca.h"
+#include "fornecidas.h"
 #include "registro.h"
-#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,12 +16,37 @@
 
 #define CAP_INICIAL 16
 
-/* ------------------------------------------------------------------ */
-/* Leitura dos critérios                                              */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+    Leitura dos critérios                                              
+   ------------------------------------------------------------------ */
+
+/* Lê da entrada o valor de um campo numérico. A função fornecida
+   ScanQuoteString não funciona, pois para um valor sem aspas ela lê o primeiro
+   caractere e chama scanf("%s") para o resto, o que faz um valor de um único
+   dígito ser concatenado com a palavra seguinte da entrada. Os campos
+   numéricos, portanto, são lidos com %s e a palavra NULO vira string vazia. */
+
+void LerValorNumerico(char *destino) {
+    if (scanf("%63s", destino) != 1) {
+        destino[0] = '\0';
+        return;
+    }
+
+    if (strcmp(destino, "NULO") == 0) destino[0] = '\0';
+}
+
+/* Lê da entrada o valor correspondente ao campo informado: a unidade de
+   medida vem entre aspas e é lida com a função fornecida; os demais campos
+   são numéricos. */
+
+void LerValorDoCampo(const char *nomeCampo, char *destino) {
+    if (strcmp(nomeCampo, "unidadeMedida") == 0) ScanQuoteString(destino);
+    else                                         LerValorNumerico(destino);
+}
 
 /* Lê os n pares "nomeCampo valor" da entrada padrão, na ordem em que
    aparecem, e devolve o vetor de critérios correspondente. */
+
 Criterio *lerCriterios(int n) {
     if (n <= 0) return NULL;
 
@@ -33,20 +58,21 @@ Criterio *lerCriterios(int n) {
             free(crit);
             return NULL;
         }
-        LerValorEntrada(crit[i].valor, TAM_VALOR);
+        LerValorDoCampo(crit[i].nomeCampo, crit[i].valor);
     }
 
     return crit;
 }
 
-/* ------------------------------------------------------------------ */
-/* Comparação de um registro com os critérios                         */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    Comparação de um registro com os critérios                         
+   ------------------------------------------------------------------ */
 
 /* Compara um único critério com o registro. Como não existe switch sobre
    strings em C, o nome do campo é testado com strcmp. O valor, guardado como
    texto, é convertido para inteiro ou caractere de acordo com o campo.
    Retorna 1 se o campo do registro casa com o valor procurado. */
+
 static int campoCasa(Registro *reg, Criterio *c) {
     int nulo = (c->valor[0] == '\0');
 
@@ -62,24 +88,21 @@ static int campoCasa(Registro *reg, Criterio *c) {
     }
 
     if (strcmp(c->nomeCampo, "velocidade") == 0) {
-        /* Buscar por velocidade nula significa procurar o valor -1. */
         if (nulo) return reg->velocidade == INT_NULO;
         return reg->velocidade == atoi(c->valor);
     }
 
     if (strcmp(c->nomeCampo, "unidadeMedida") == 0) {
-        /* O campo tem um único byte, então a comparação é de caractere e não
-           de string; a unidade nula é representada pelo lixo '$'. */
         if (nulo) return reg->unidadeMedida == LIXO;
         return reg->unidadeMedida == c->valor[0];
     }
 
-    /* Nome de campo desconhecido: nenhum registro pode satisfazê-lo. */
     return 0;
 }
 
 /* Um registro é resposta da busca apenas quando satisfaz todos os critérios
-   ao mesmo tempo. Registros logicamente removidos são sempre descartados. */
+   ao mesmo tempo. */
+
 int registroSatisfazCriterios(Registro *reg, Criterio *crit, int n) {
     if (reg->removido == REMOVIDO) return 0;
 
@@ -90,15 +113,16 @@ int registroSatisfazCriterios(Registro *reg, Criterio *crit, int n) {
     return 1;
 }
 
-/* ------------------------------------------------------------------ */
-/* Atualização de um campo                                            */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    Atualização de um campo                                            
+   ------------------------------------------------------------------ */
 
 /* Escreve o valor do critério no campo correspondente do registro. Como os
    registros têm tamanho fixo, a atualização é feita sobre o registro em
    memória e regravada no mesmo RRN por quem chamou.
    idPoPs e idPoPsConectado não podem ficar nulos, então um valor nulo para
    eles é ignorado. */
+
 void AtualizarCampo(Registro *reg, Criterio *c) {
     int nulo = (c->valor[0] == '\0');
 
@@ -122,18 +146,15 @@ void AtualizarCampo(Registro *reg, Criterio *c) {
         return;
     }
 
-    /* Nome de campo desconhecido: nada a atualizar. */
 }
 
-/* ------------------------------------------------------------------ */
-/* Varredura do arquivo de dados                                      */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+    Varredura do arquivo de dados                                     
+   ------------------------------------------------------------------ */
 
 /* Percorre o arquivo sequencialmente, do primeiro registro até o fim, e
    guarda o RRN de cada registro que satisfaz a busca. O RRN é controlado por
-   um contador porque a leitura é sequencial: o primeiro registro lido depois
-   do cabeçalho é o RRN 0, o seguinte é o RRN 1, e assim por diante.
-   O arquivo não é fechado aqui: quem abriu é quem fecha. */
+   um contador porque a leitura é sequencial. */
 
 int *buscarRRNs(FILE *bin, Criterio *crit, int n, int *qtd) {
     *qtd = 0;
@@ -151,7 +172,6 @@ int *buscarRRNs(FILE *bin, Criterio *crit, int n, int *qtd) {
 
     while (lerRegistro(bin, &reg)) {
         if (registroSatisfazCriterios(&reg, crit, n)) {
-            /* Vetor cheio: dobra a capacidade antes de inserir. */
             if (*qtd == capacidade) {
                 capacidade *= 2;
                 int *novo = (int *)realloc(rrns, (size_t)capacidade * sizeof(int));
@@ -168,8 +188,6 @@ int *buscarRRNs(FILE *bin, Criterio *crit, int n, int *qtd) {
         rrn++;
     }
 
-    /* Nenhum registro encontrado: devolve NULL para quem chamou não precisar
-       liberar um vetor vazio. */
     if (*qtd == 0) {
         free(rrns);
         return NULL;

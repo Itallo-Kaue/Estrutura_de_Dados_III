@@ -15,15 +15,16 @@
 /* Os campos de controle ficam no início do registro, nesta ordem:
    removido (1 byte) e encadeamentoPilha (4 bytes). O deslocamento abaixo
    posiciona diretamente no encadeamento, sem precisar ler o registro todo. */
+
 #define DESLOC_ENCADEAMENTO ((long)sizeof(char))
 
-/* ------------------------------------------------------------------ */
-/* Inserção na pilha                                                  */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
+    Inserção na pilha                                                  
+   ------------------------------------------------------------------ */
 
-/* O registro removido vira o novo topo: o encadeamento dele guarda o topo
-   anterior, formando a lista encadeada dentro do arquivo. Os dois campos de
+/* O registro removido vira o novo topo. Os dois campos de
    controle são gravados juntos, a partir do byte offset do RRN. */
+
 void Empilhar(FILE *bin, Cabecalho *cab, int rrn) {
     if (bin == NULL || rrn < 0) return;
 
@@ -34,18 +35,19 @@ void Empilhar(FILE *bin, Cabecalho *cab, int rrn) {
     fwrite(&removido, sizeof(char), 1, bin);
     fwrite(&encadeamento, sizeof(int), 1, bin);
 
-    /* Atualiza o cabeçalho: novo topo e mais um registro removido. */
+    /* Atualiza o cabeçalho com o novo topo e mais um registro removido. */
     cab->topoPilha = rrn;
     cab->nroRegRem++;
 }
 
-/* ------------------------------------------------------------------ */
-/* Remoção da pilha                                                   */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+    Remoção da pilha                                                   
+   ------------------------------------------------------------------ */
 
 /* Retira o registro do topo para reaproveitar o seu espaço. Basta ler o
    encadeamento do registro apontado por topoPilha: ele é o próximo topo.
    Retorna o RRN retirado, ou -1 se não houver registro removido disponível. */
+
 int Desempilhar(FILE *bin, Cabecalho *cab) {
     if (bin == NULL || cab->topoPilha == -1) return -1;
 
@@ -56,7 +58,7 @@ int Desempilhar(FILE *bin, Cabecalho *cab) {
     fseek(bin, byteOffset(rrn) + DESLOC_ENCADEAMENTO, SEEK_SET);
     if (fread(&proximoTopo, sizeof(int), 1, bin) != 1) return -1;
 
-    /* Atualiza o cabeçalho: o encadeamento lido vira o novo topo. */
+    /* O encadeamento lido vira o novo topo. */
     cab->topoPilha = proximoTopo;
     cab->nroRegRem--;
 

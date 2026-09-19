@@ -1,5 +1,5 @@
 /*  Ítallo Kauê Barbosa Santos   16839029
-    Natália Yumi Wanabi          13725566
+    Natália Yumi Watanabi        13725566
 */
 
 #include <stdio.h>
@@ -10,13 +10,13 @@ int main() {
     if (scanf("%d", &opcao) != 1) return 0;
     
     switch(opcao) {
-        case 1: funcionalidade1(); break;
-        case 2: funcionalidade2(); break;
-        case 3: funcionalidade3(); break;
-        case 4: funcionalidade4(); break;
-        case 5: funcionalidade5(); break; 
-        case 6: funcionalidade6(); break;
-        case 7: funcionalidade7(); break;
+        case 1: Funcionalidade_1(); break;
+        case 2: Funcionalidade_2(); break;
+        case 3: Funcionalidade_3(); break;
+        case 4: Funcionalidade_4(); break;
+        case 5: Funcionalidade_5(); break; 
+        case 6: Funcionalidade_6(); break;
+        case 7: Funcionalidade_7(); break;
     }
     return 0;
 }

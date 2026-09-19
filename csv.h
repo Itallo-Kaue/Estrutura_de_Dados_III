@@ -1,7 +1,7 @@
 /*
     csv.h
     Leitura do arquivo de entrada do CSV e carga dos seus registros
-    no arquivo de dados binário (funcionalidade [1]).
+    no arquivo de dados binário.
 */
 
 #ifndef CSV_H

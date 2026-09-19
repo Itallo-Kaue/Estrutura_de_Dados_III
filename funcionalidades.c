@@ -14,8 +14,7 @@
 #include "pilha.h"
 #include "registro.h"
 #include "util.h"
-
-#include "fornecidas.c"
+#include "fornecidas.h"
 
 #define TAM_NOME_ARQUIVO 64
 
@@ -24,7 +23,7 @@
 #define MSG_INEXISTENTE "Registro inexistente.\n"
 
 /* ------------------------------------------------------------------ 
-    1º Funcionalidade: Criação                 
+    1º Funcionalidade: Criação 
    ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo CSV de origem e o nome do arquivo binário a ser
@@ -75,14 +74,13 @@
         impressos += ImprimirRegistros(&reg);
     }
 
-    /* Se nenhum registro for encontrado, mostra a mensagem de inexistente. */
     if (impressos == 0) printf(MSG_INEXISTENTE);
 
     fclose(bin);
 }
 
 /* ------------------------------------------------------------------ 
-    3º Funcionalidade: Busca                                           
+    3º Funcionalidade: Busca                                            
    ------------------------------------------------------------------ */
 
 /* Entrada: o nome do arquivo de dados e a quantidade n de buscas. Logo após pegar
@@ -122,7 +120,6 @@ void Funcionalidade_3() {
             }
         }
 
-        /* Linha em branco separando o resultado de cada busca. */
         printf("\n");
 
         free(rrns);
@@ -132,7 +129,7 @@ void Funcionalidade_3() {
     fclose(bin);
 }
 
-/* ------------------------------------------------------------------ 
+/* ------------------------------------------------------------------
     4º Funcionalidade: Busca                                                 
    ------------------------------------------------------------------ */
 
@@ -160,7 +157,6 @@ void Funcionalidade_4() {
     if (rrn < 0 || rrn >= cab.proxRRN || !lerRegistroPorRRN(bin, &reg, rrn)) {
         printf(MSG_INEXISTENTE);
     } else if (!ImprimirRegistros(&reg)) {
-        /* ImprimirRegistros devolve 0 quando o registro está removido. */
         printf(MSG_INEXISTENTE);
     }
 
@@ -197,11 +193,9 @@ void Funcionalidade_5() {
         int m;
         if (scanf("%d", &m) != 1) break;
 
-        /* Lê os m pares (nomeCampo, valor) desta operação de remoção. */
         Criterio *crit = lerCriterios(m);
         if (crit == NULL) continue;
 
-        /* Localiza todos os RRNs que satisfazem os critérios ao mesmo tempo. */
         int qtd = 0;
         int *rrns = buscarRRNs(bin, crit, m, &qtd);
 
@@ -212,20 +206,20 @@ void Funcionalidade_5() {
             /* Os campos de dados são sobrescritos com lixo e regravados; em
                seguida a pilha cuida dos campos de controle, colocando o
                registro no topo e atualizando o cabeçalho. */
+
             preencherComLixo(&reg);
             escreverRegistroPorRRN(bin, &reg, rrns[j]);
 
             Empilhar(bin, &cab, rrns[j]);
         }
 
-        /* Libera as estruturas alocadas por buscarRRNs e lerCriterios antes
-           de passar para a próxima operação de remoção. */
         free(rrns);
         free(crit);
     }
 
     /* Regrava o cabeçalho atualizado, marca o arquivo como consistente ('1')
        e o fecha antes de imprimir o resultado. */
+
     fecharArquivoBinario(bin, &cab);
 
     BinarioNaTela(nomeArquivo);
@@ -260,22 +254,21 @@ void Funcionalidade_6() {
         Registro reg;
         inicializarRegistro(&reg);
 
-        /* Os campos vêm em ordem fixa, sem o nome do campo, mas com o mesmo
-           tratamento de aspas e de NULO usado na busca. */
-        if (!LerValorEntrada(valor, TAM_VALOR)) break;
+        LerValorNumerico(valor);
         reg.idPoPs = atoi(valor);
 
-        if (!LerValorEntrada(valor, TAM_VALOR)) break;
+        LerValorNumerico(valor);
         reg.idPoPsConectado = atoi(valor);
 
-        if (!LerValorEntrada(valor, TAM_VALOR)) break;
+        LerValorNumerico(valor);
         if (valor[0] != '\0') reg.velocidade = atoi(valor);
 
-        if (!LerValorEntrada(valor, TAM_VALOR)) break;
+        ScanQuoteString(valor);
         if (valor[0] != '\0') reg.unidadeMedida = valor[0];
 
         /* Tenta reusar o topo da pilha de removidos; se não houver nenhum,
            o registro é acrescentado no fim do arquivo. */
+
         int rrn = Desempilhar(bin, &cab);
         if (rrn == -1) {
             rrn = cab.proxRRN;
@@ -337,7 +330,6 @@ void Funcionalidade_7() {
             Registro reg;
             if (!lerRegistroPorRRN(bin, &reg, rrns[j])) continue;
 
-            /* Aplica, na ordem em que foram lidos, todos os campos novos. */
             for (int k = 0; k < p; k++) AtualizarCampo(&reg, &novos[k]);
 
             escreverRegistroPorRRN(bin, &reg, rrns[j]);
